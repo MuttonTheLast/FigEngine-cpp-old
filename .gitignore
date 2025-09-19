@@ -1,3 +1,12 @@
+# Visual Studio Trashs :|
+*.sln
+*.slnx
+*.vcxproj*
+.vs/
+
+# Premake Shits
+build/
+
 # Prerequisites
 *.d
 
@@ -30,3 +39,8 @@
 *.exe
 *.out
 *.app
+
+# dev tools
+devtool.py
+.venv/
+bin/
