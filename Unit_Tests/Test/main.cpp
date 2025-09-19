@@ -16,6 +16,7 @@ int main()
 	Window* window = Window::Create(props, NULL);
 	GraphicsDevice* device = GraphicsDevice::Create(GraphicsBackend_D3D12, true);
 	device->ClaimWindow(window);
+	// ! day one finished 
 	while (true)
 	{
 
