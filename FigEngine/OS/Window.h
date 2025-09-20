@@ -2,56 +2,84 @@
 #include <SDL3/SDL.h>
 #include "../Utilities/GLMath.h"
 #include <string>
+
 namespace Fig
 {
-	struct WindowProps
-	{
-		std::string Title;
-		int Width;
-		int Height;
-		bool Fullscreen;
-		bool Borderless;
-		bool Centered;
-		bool Maximized;
-		bool Resizable;
-		bool HighDPI;
+    // Structure to hold window creation properties
+    struct WindowProps
+    {
+        std::string Title;    // Window title
+        int Width;            // Window width in pixels
+        int Height;           // Window height in pixels
+        bool Fullscreen;      // Should the window be fullscreen?
+        bool Borderless;      // Should the window have no border?
+        bool Centered;        // Should the window be centered on screen?
+        bool Maximized;       // Should the window start maximized?
+        bool Resizable;       // Should the window be resizable?
+        bool HighDPI;         // Should the window support high DPI?
 
-		WindowProps(std::string title = "DefualtWindow", int width = 800, int height = 600,
-			bool fullscreen = false, bool borderless = false, bool centered = false, bool maximized = false,
-			bool resizable = false, bool highDPI = false)
-			:Title(title), Width(width), Height(height), Fullscreen(fullscreen), Borderless(borderless),
-			Centered(centered), Maximized(maximized), Resizable(resizable), HighDPI(highDPI)
-		{
-		}
-	};
+        // Constructor with default values for all properties
+        WindowProps(std::string title = "DefualtWindow", int width = 800, int height = 600,
+            bool fullscreen = false, bool borderless = false, bool centered = false, bool maximized = false,
+            bool resizable = false, bool highDPI = false)
+            :Title(title), Width(width), Height(height), Fullscreen(fullscreen), Borderless(borderless),
+            Centered(centered), Maximized(maximized), Resizable(resizable), HighDPI(highDPI)
+        {
+        }
+    };
 
+    // Window class encapsulating SDL_Window and related operations
+    class Window
+    {
+    public:
+        // Static factory method to create a new Window instance
+        static Window* Create(WindowProps props, SDL_WindowFlags flags);
 
-	class Window
-	{
-	public:
-		static Window* Create(WindowProps props, SDL_WindowFlags flags);
+        bool Claimed = false; // Indicates if the window is claimed/owned by a subsystem
 
-		bool Claimed = false;
-	public:
-		~Window();
-		void Dispose();
-		Vector2 GetSize();
-		Vector2 GetPos();
-		bool SetSize(int width, int height);
-		bool SetSize(Vector2 size);
-		bool Maximize();
-		bool SetPos(int x, int y);
-		bool SetPos(Vector2 pos);
-		bool CenterWindow();
-		SDL_Window* GetHandle();
+    public:
+        // Destructor: cleans up resources
+        ~Window();
 
-		operator SDL_Window*();
-	private:
-		Window(std::string title, int width, int height, SDL_WindowFlags flags);
+        // Releases the SDL_Window resource if not already disposed
+        void Dispose();
 
-		SDL_Window* m_Window;
-		
-		bool m_Disposing = false;
-	};
+        // Returns the current window size as a Vector2 (width, height)
+        Vector2 GetSize();
+
+        // Returns the current window position as a Vector2 (x, y)
+        Vector2 GetPos();
+
+        // Sets the window size using width and height
+        bool SetSize(int width, int height);
+
+        // Sets the window size using a Vector2
+        bool SetSize(Vector2 size);
+
+        // Maximizes the window
+        bool Maximize();
+
+        // Sets the window position using x and y
+        bool SetPos(int x, int y);
+
+        // Sets the window position using a Vector2
+        bool SetPos(Vector2 pos);
+
+        // Centers the window on the screen
+        bool CenterWindow();
+
+        // Returns the underlying SDL_Window pointer
+        SDL_Window* GetHandle();
+
+        // Implicit conversion operator to SDL_Window*
+        operator SDL_Window*();
+
+    private:
+        // Private constructor: use Create() to instantiate
+        Window(std::string title, int width, int height, SDL_WindowFlags flags);
+
+        SDL_Window* m_Window;    // Pointer to the SDL window
+        bool m_Disposing = false; // Tracks if the window is being disposed
+    };
 
 }
