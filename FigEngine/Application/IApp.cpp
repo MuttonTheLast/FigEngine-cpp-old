@@ -2,12 +2,20 @@
 #include "IApp.h"
 #include <chrono>
 #include <iostream>
-
+#include <thread>
+#include "../OS/EventHandler.h"
+#include "../OS/Input/Input.h"
+#include "../Utilities/Log/Logger.h"
 namespace Fig
 {
-	
+	/*IApp* IApp::GetMain()
+	{
+		return s_Main;
+	}*/
 	void IApp::Run()
 	{
+
+		Logger::Info("App init stage.", "App", true);
 		// Initialize the application (user-defined)
 		Init();
 
@@ -30,6 +38,7 @@ namespace Fig
 		unsigned int updateCount = 0;
 
 		m_Running = true;
+		Logger::Info("Starting main loop.", "App", true);
 		while (m_Running)
 		{
 			// Calculate elapsed time since last frame
@@ -43,21 +52,25 @@ namespace Fig
 			renderElapse += elapsed;
 			updateElapse += elapsed;
 
-			dt = 1.0 / m_TickRate;
-			fpsDT = 1.0 / m_FrameRate;
+			dt = 1.0 / m_TargetTickRate;
+			fpsDT = 1.0 / m_TargetFrameRate;
+
+
+			// --- Variable timestep update ---
+			// Call Update once per tick
+			if (updateElapse >= dt)
+			{
+				Input::Update(updateElapse);
+				EventHandler::Update();
+				Update(updateElapse);
+				updateElapse = 0;
+			}
+
 			// Fixed updates
 			while (accumulator >= dt) {
 				FixedUpdate(dt);
 				accumulator -= dt;
 				updateCount++;
-			}
-
-			// --- Variable timestep update ---
-			// Call Update once per frame (variable delta)
-			if (updateElapse >= dt)
-			{
-				Update(updateElapse);
-				updateElapse = 0.0;
 			}
 
 			// --- Rendering ---
@@ -67,8 +80,9 @@ namespace Fig
 				// (Rendering code should be placed here)
 				if (updateCount > 1)
 				{
-					std::cout << "Updated " << updateCount << " times.\n";
+					Logger::Info("FixUpdated " + std::to_string(updateCount) + " times before render.", "App", false);
 				}
+				Draw();
 				renderElapse = 0.0;
 				updateCount = 0;
 			}
@@ -76,5 +90,40 @@ namespace Fig
 			// Optionally, sleep or yield here to reduce CPU usage
 			// std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
+	}
+	int IApp::GetTargetTickRate() const
+	{
+		return m_TargetTickRate;
+	}
+	int IApp::GetTargetFrameRate() const
+	{
+		return m_TargetFrameRate;
+	}
+	void IApp::SetTargetTickRate(int tickRate)
+	{ 
+		m_TargetTickRate = tickRate;
+	}
+	void IApp::SetTargetFrameRate(int frameRate)
+	{
+		m_TargetFrameRate = frameRate;
+	}
+	IApp::IApp(std::string appName, std::string companyName, WindowProps props, bool debug)
+		:m_AppName(appName), m_CompanyName(companyName), m_Debug(debug)
+	{
+		Logger::Init(debug, true);
+		Logger::Info("Starting Application: " + m_AppName, "App", true);
+		Logger::Info("Initializing SDL...", "App", true);
+		if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
+		{
+			Logger::Critical(std::string("SDL initialize failed: \n") + SDL_GetError(), "App", true);
+			throw SDL_GetError();
+		}
+		m_GraphicsDevice = GraphicsDevice::Create(GraphicsBackend_D3D12, true);
+		m_Window = Window::Create(props, NULL);
+		m_GraphicsDevice->ClaimWindow(m_Window);
+		Logger::Info("Application fully initialized.", "App", true);
+	}
+	IApp::~IApp()
+	{
 	}
 }

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "GraphicsDevice.h"
-
+#include "../Utilities/Log/Logger.h"
 namespace Fig
 {
 	// Static factory method to create a new GraphicsDevice instance
@@ -34,22 +34,19 @@ namespace Fig
 		if (m_Window != NULL)
 		{
 			// Window already claimed by this device
-			// TODO: Log Error
-			throw "Graphics device already have window.";
+			Logger::Warn("Graphics device already have window.", "App", true);
 			return false;
 		}
 		if (window->Claimed)
 		{
 			// Window already claimed by another device
-			// TODO: Log Error
-			throw "Window already claimed.";
+			Logger::Warn("Window already claimed by another device.", "App", true);
 			return false;
 		}
 		if (!SDL_ClaimWindowForGPUDevice(m_Device, window->GetHandle()))
 		{
 			// SDL failed to claim the window for the GPU device
-			// TODO: Log Error
-			throw SDL_GetError();
+			Logger::Error(std::string("Failed to claim window for graphics device: ") + SDL_GetError(), "App", true);
 			return false;
 		}
 		window->Claimed = true;
@@ -72,7 +69,12 @@ namespace Fig
 	// Constructor: creates the GPU device with the specified shader format and debug flag
 	GraphicsDevice::GraphicsDevice(SDL_GPUShaderFormat shader, bool debug)
 	{
+		Logger::Info("Creating GraphicsDevice...", "App", true);
 		m_Device = SDL_CreateGPUDevice(shader, debug, NULL);
+		if (!m_Device)
+		{
+			Logger::Error(std::string("Failed to create graphics device: ") + SDL_GetError(), "App", true);
+		}
 	}
 
 }

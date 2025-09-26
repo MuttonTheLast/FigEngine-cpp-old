@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Window.h"
+#include "../Utilities/Log/Logger.h"
 namespace Fig
 {
 
@@ -42,7 +43,12 @@ namespace Fig
 	// Constructor: creates the SDL window with the given title, size, and flags.
 	Window::Window(std::string title, int width, int height, SDL_WindowFlags flags)
 	{
+		Logger::Info("Creating Window...", "App", true);
 		m_Window = SDL_CreateWindow(title.c_str(), width, height, flags);
+		if (m_Window == NULL)
+		{
+			Logger::Error(std::string("Failed to create window: ") + SDL_GetError(), "App", true);
+		}
 	}
 
 	// Destructor: ensures the window is properly disposed.

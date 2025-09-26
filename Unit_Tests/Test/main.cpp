@@ -3,12 +3,18 @@
 #include <iostream>
 #include <SDL3/SDL.h>
 #include "FigEngine/Application/IApp.h"
+#include "FigEngine/OS/Input/Input.h"
+#include "FigEngine/Utilities/Log/Logger.h"
 using namespace Fig;
 
 class Game : public IApp
 {
 public:
+	Game(std::string appName, std::string companyName, WindowProps prop, bool debug)
+		:IApp(appName, companyName, prop, debug)
+	{
 
+	}
 private:
 
 
@@ -21,28 +27,30 @@ private:
 	void FixedUpdate(double delta) override
 	{
 	}
-
+	double updateCount = 0;
 	void Update(double delta) override
 	{
+		updateCount += delta;
+
 	}
+
+
+	// Inherited via IApp
+	void Draw() override
+	{
+	}
+
+public:
 
 };
 
 
 int main()
 {
-	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK))
-	{
-		// TODO: Log Error
-		throw SDL_GetError();
-	}
 
 	WindowProps props("test");
 	
-	Window* window = Window::Create(props, NULL);
-	GraphicsDevice* device = GraphicsDevice::Create(GraphicsBackend_D3D12, true);
-	device->ClaimWindow(window);
 	
-	Game* game = new Game();
+	Game* game = new Game("DefaultGame", "Fig", props, true);
 	game->Run();
 }
