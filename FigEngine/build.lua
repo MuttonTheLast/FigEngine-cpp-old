@@ -11,6 +11,8 @@ prj_full_libs = {
 }
 prj_pch = "pch.h"
 prj_pchs = "%{prj.location}/pch.cpp"
+
+
 --[[
 prj_name = nil -- "ProjectName" !important
 prj_loc = nil -- "Better/Not/Change/"

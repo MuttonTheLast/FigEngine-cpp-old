@@ -1,48 +1,52 @@
 #include "pch.h"
 #include "GraphicsDevice.h"
-
+#include "../Utilities/Log/Logger.h"
 namespace Fig
 {
+	// Static factory method to create a new GraphicsDevice instance
 	GraphicsDevice* GraphicsDevice::Create(GraphicsBackend backend, bool debug)
 	{
-
 		GraphicsDevice* device = new GraphicsDevice(backend, debug);
 		return device;
 	}
 
+	// Destructor: ensures resources are released
 	GraphicsDevice::~GraphicsDevice()
 	{
 		Dispose();
 	}
 
+	// Releases the GPU device and any claimed window
 	void GraphicsDevice::Dispose()
 	{
 		if (!m_Disposing)
 		{
 			m_Disposing = true;
-			ReleaseWindow();
-			SDL_DestroyGPUDevice(m_Device);
+			ReleaseWindow(); // Unclaim and release the window if any
+			SDL_DestroyGPUDevice(m_Device); // Destroy the GPU device
 		}
 	}
 
+	// Claims a window for this graphics device
+	// Returns true on success, throws and returns false on failure
 	bool GraphicsDevice::ClaimWindow(Window* window)
 	{
 		if (m_Window != NULL)
 		{
-			// TODO: Log Error
-			throw "Graphics device already have window.";
+			// Window already claimed by this device
+			Logger::Warn("Graphics device already have window.", "App", true);
 			return false;
 		}
 		if (window->Claimed)
 		{
-			// TODO: Log Error
-			throw "Window already claimed.";
+			// Window already claimed by another device
+			Logger::Warn("Window already claimed by another device.", "App", true);
 			return false;
 		}
 		if (!SDL_ClaimWindowForGPUDevice(m_Device, window->GetHandle()))
 		{
-			// TODO: Log Error
-			throw SDL_GetError();
+			// SDL failed to claim the window for the GPU device
+			Logger::Error(std::string("Failed to claim window for graphics device: ") + SDL_GetError(), "App", true);
 			return false;
 		}
 		window->Claimed = true;
@@ -50,6 +54,7 @@ namespace Fig
 		return true;
 	}
 
+	// Releases the currently claimed window from this graphics device
 	void GraphicsDevice::ReleaseWindow()
 	{
 		if (m_Window == NULL)
@@ -61,9 +66,15 @@ namespace Fig
 		m_Window = NULL;
 	}
 
+	// Constructor: creates the GPU device with the specified shader format and debug flag
 	GraphicsDevice::GraphicsDevice(SDL_GPUShaderFormat shader, bool debug)
 	{
+		Logger::Info("Creating GraphicsDevice...", "App", true);
 		m_Device = SDL_CreateGPUDevice(shader, debug, NULL);
+		if (!m_Device)
+		{
+			Logger::Error(std::string("Failed to create graphics device: ") + SDL_GetError(), "App", true);
+		}
 	}
 
 }
