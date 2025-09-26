@@ -3,6 +3,7 @@
 *.slnx
 *.vcxproj*
 .vs/
+*/logs/*
 
 # Premake Shits
 build/
