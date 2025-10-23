@@ -1,15 +1,10 @@
-# Visual Studio Trashs :|
-*.sln
-*.slnx
-*.vcxproj*
-.vs/
-*/logs/*
-
-# Premake Shits
-build/
-
 # Prerequisites
 *.d
+
+# build
+build/
+/build*/
+.cache/
 
 # Compiled Object files
 *.slo
@@ -20,6 +15,12 @@ build/
 # Precompiled Headers
 *.gch
 *.pch
+
+# Linker files
+*.ilk
+
+# Debugger Files
+*.pdb
 
 # Compiled Dynamic libraries
 *.so
@@ -41,7 +42,5 @@ build/
 *.out
 *.app
 
-# dev tools
-devtool.py
-.venv/
-bin/
+# debug information files
+*.dwo

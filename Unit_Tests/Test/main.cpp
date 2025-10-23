@@ -1,10 +1,10 @@
-#include "FigEngine/OS/Window.h" 
-#include "FigEngine/Graphics/GraphicsDevice.h" 
+#include "Fig/OS/Window.h" 
+#include "Fig/Graphics/GraphicsDevice.h" 
 #include <iostream>
 #include <SDL3/SDL.h>
-#include "FigEngine/Application/IApp.h"
-#include "FigEngine/OS/Input/Input.h"
-#include "FigEngine/Utilities/Log/Logger.h"
+#include "Fig/Application/IApp.h"
+#include "Fig/OS/Input/Input.h"
+#include "Fig/Utilities/Log/Logger.h"
 using namespace Fig;
 
 class Game : public IApp
@@ -49,8 +49,8 @@ int main()
 {
 
 	WindowProps props("test");
-	
-	
+
+
 	Game* game = new Game("DefaultGame", "Fig", props, true);
 	game->Run();
 }
