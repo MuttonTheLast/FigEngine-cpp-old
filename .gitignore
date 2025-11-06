@@ -6,6 +6,9 @@ build/
 /build*/
 .cache/
 
+*.so
+
+
 # Compiled Object files
 *.slo
 *.lo
