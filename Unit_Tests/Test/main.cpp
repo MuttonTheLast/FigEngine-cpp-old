@@ -1,10 +1,8 @@
 #include "Fig/OS/Window.h" 
-#include "Fig/Graphics/GraphicsDevice.h" 
-#include <iostream>
 #include <SDL3/SDL.h>
 #include "Fig/Application/IApp.h"
-#include "Fig/OS/Input/Input.h"
-#include "Fig/Utilities/Log/Logger.h"
+#include <unistd.h>
+#include <Fig/OS/EventHandler.h>
 using namespace Fig;
 
 class Game : public IApp
@@ -21,8 +19,17 @@ private:
 	// Inherited via IApp
 	bool Init() override
 	{
-		return false;
+        EventHandler::SetSizeChangeCallback( [this](int width, int height) 
+                { return SizeChangeCallback(width, height); });
+
+		return true;
 	}
+
+    bool SizeChangeCallback(int width, int height)
+    {
+        
+        return true;
+    }
 
 	void FixedUpdate(double delta) override
 	{
@@ -36,8 +43,11 @@ private:
 
 
 	// Inherited via IApp
-	void Draw() override
+	void Render(SDL_GPUCommandBuffer* cmdbuff, SDL_GPURenderPass* renderpass) override
 	{
+        
+        
+
 	}
 
 public:
@@ -47,10 +57,10 @@ public:
 
 int main()
 {
-
 	WindowProps props("test");
-
+    props.Resizable = true;
 
 	Game* game = new Game("DefaultGame", "Fig", props, true);
 	game->Run();
+    return 0;
 }

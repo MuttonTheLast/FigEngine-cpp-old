@@ -1,3 +1,5 @@
+#include "SDL3/SDL_gpu.h"
+#include "SDL3/SDL_pixels.h"
 #include "pch.h"
 #include "Fig/Graphics/GraphicsDevice.h"
 #include "Fig/Utilities/Log/Logger.h"
@@ -65,6 +67,21 @@ namespace Fig
 		m_Window->Claimed = false;
 		m_Window = NULL;
 	}
+
+    SDL_GPUCommandBuffer* GraphicsDevice::AcquireCommandBuffer()
+    {
+        return SDL_AcquireGPUCommandBuffer(m_Device);
+    }
+
+    void GraphicsDevice::SetClearColor(const SDL_FColor& color)
+    {
+        m_ClearColor = color;
+    }
+
+    const SDL_FColor& GraphicsDevice::GetClearColor()
+    {
+        return m_ClearColor;
+    }
 
 	// Constructor: creates the GPU device with the specified shader format and debug flag
 	GraphicsDevice::GraphicsDevice(SDL_GPUShaderFormat shader, bool debug)

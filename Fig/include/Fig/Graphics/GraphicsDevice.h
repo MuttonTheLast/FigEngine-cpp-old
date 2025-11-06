@@ -1,6 +1,8 @@
 #pragma once
 #include "SDL3/SDL.h"
 #include "../OS/Window.h"
+#include "SDL3/SDL_gpu.h"
+#include "SDL3/SDL_pixels.h"
 
 namespace Fig
 {
@@ -38,13 +40,18 @@ namespace Fig
 
         // Releases the currently claimed window from this device
         void ReleaseWindow();
-
+        
+        SDL_GPUCommandBuffer* AcquireCommandBuffer();
+        
+        void SetClearColor(const SDL_FColor& color);
+        const SDL_FColor& GetClearColor();
     private:
         // Private constructor: use Create() to instantiate
         // @param shader: The shader format/backend to use
         // @param debug: Enable debug mode if true
         GraphicsDevice(SDL_GPUShaderFormat shader, bool debug);
-
+        
+        SDL_FColor m_ClearColor = (SDL_FColor){0,0,0,1};
         SDL_GPUDevice* m_Device; // Pointer to the underlying SDL GPU device
         Window* m_Window = NULL; // Pointer to the currently claimed window (if any)
         bool m_Disposing = false; // Tracks if the device is being disposed

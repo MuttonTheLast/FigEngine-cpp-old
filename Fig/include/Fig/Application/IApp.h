@@ -2,6 +2,7 @@
 
 #include "Fig/OS/Window.h"
 #include "Fig/Graphics/GraphicsDevice.h"
+#include "SDL3/SDL_gpu.h"
 
 namespace Fig
 {
@@ -30,7 +31,7 @@ namespace Fig
         // @param delta: Time in seconds since last update.
         virtual void Update(double delta) = 0;
 
-		virtual void Draw() = 0;
+		virtual void Render(SDL_GPUCommandBuffer* cmdbuf, SDL_GPURenderPass* renderpass) = 0;
 
         int GetTargetTickRate() const;
 		int GetTargetFrameRate() const;
@@ -39,15 +40,19 @@ namespace Fig
     protected:
         IApp(std::string appName, std::string companyName, WindowProps prop, bool debug);
 
-    private:
-        std::string m_AppName;
-		std::string m_CompanyName;
+		// The graphics device (e.g., Direct3D, OpenGL, Vulkan).
+		GraphicsDevice* m_GraphicsDevice;
 
         // The main application window.
         Window* m_Window;
-        
-		// The graphics device (e.g., Direct3D, OpenGL, Vulkan).
-		GraphicsDevice* m_GraphicsDevice;
+       
+    private:
+        void Render();
+    protected:
+        SDL_GPUTexture* m_SwapchainTexture;
+    private:
+        std::string m_AppName;
+		std::string m_CompanyName;
 
 		// Target number of updates and fixed updates per second.
         int m_TargetTickRate = 60;
@@ -59,6 +64,8 @@ namespace Fig
         bool m_Running = false;
 
 		bool m_Debug = false;
+
+        
     };
 }
 
