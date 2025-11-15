@@ -37,6 +37,8 @@ namespace Fig
 		int GetTargetFrameRate() const;
 		void SetTargetTickRate(int tickRate);
 		void SetTargetFrameRate(int frameRate);
+
+        GraphicsBackend GetBackend();
     protected:
         IApp(std::string appName, std::string companyName, WindowProps prop, bool debug);
 
@@ -59,7 +61,8 @@ namespace Fig
 
         // Target number of frames rendered per second.
         int m_TargetFrameRate = 60;
-
+        
+        GraphicsBackend m_Backend;
         // Controls the main loop; set to false to exit.
         bool m_Running = false;
 

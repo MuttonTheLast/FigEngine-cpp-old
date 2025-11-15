@@ -26,6 +26,7 @@ build/
 *.so
 *.dylib
 *.dll
+*.so*.[0-9]
 
 # Fortran module files
 *.mod

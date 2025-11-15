@@ -1,6 +1,5 @@
 #include "SDL3/SDL_gpu.h"
 #include "SDL3/SDL_pixels.h"
-#include "pch.h"
 #include "Fig/Graphics/GraphicsDevice.h"
 #include "Fig/Utilities/Log/Logger.h"
 namespace Fig
@@ -82,7 +81,10 @@ namespace Fig
     {
         return m_ClearColor;
     }
-
+    SDL_GPUDevice* GraphicsDevice::GetHandle() const
+    {
+        return m_Device;
+    }
 	// Constructor: creates the GPU device with the specified shader format and debug flag
 	GraphicsDevice::GraphicsDevice(SDL_GPUShaderFormat shader, bool debug)
 	{

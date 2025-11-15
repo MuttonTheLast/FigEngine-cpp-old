@@ -3,7 +3,10 @@
 #include "Fig/Utilities/Log/Logger.h"
 #include "SDL3/SDL_asyncio.h"
 #include "SDL3/SDL_filesystem.h"
+#include "SDL3/SDL_stdinc.h"
+#include "SDL3/SDL_storage.h"
 #include <string>
+#include <vector>
 namespace Fig
 {
     std::string FileSystem::BASE_PATH = "";
@@ -12,6 +15,9 @@ namespace Fig
     std::vector<SDL_AsyncIOQueue*> FileSystem::s_AsyncQueues(0);
 
     ankerl::unordered_dense::map<SDL_AsyncIO*, SDL_AsyncIOOutcome> FileSystem::s_Outcomes;
+
+    // NOTE: SDL_Storage
+    SDL_Storage* FileSystem::m_Storage = nullptr;
 
     void FileSystem::Init(std::string_view appName, std::string_view companyName,
             char MaxQueueCount)
@@ -33,10 +39,17 @@ namespace Fig
                 throw "Failed to create io queue";
             }
         }
+
+        // NOTE: SDL_Storage
+        m_Storage = SDL_OpenFileStorage(BASE_PATH.c_str());
+
     }
 
     void FileSystem::Shutdown()
-    {
+    {   
+        // NOTE: SDL_Storage
+        SDL_CloseStorage(m_Storage);
+        
         for (auto& queue : s_AsyncQueues)
         {
             SDL_DestroyAsyncIOQueue(queue);
@@ -81,5 +94,25 @@ namespace Fig
             s_QueueID = 0;
         }
         return asyncIO;
+    }
+
+
+    // INFO: SDL_Storage methods
+    bool FileSystem::ReadFile(const char *path, std::vector<Uint8> &buffer, ReadLocation location)
+    {
+        
+        switch (location) {
+            case ReadLocation_App:
+                Uint64 size;
+                if (!SDL_GetStorageFileSize(m_Storage, path, &size))
+                {
+                    return false;
+                }
+                buffer.resize(size);
+                return SDL_ReadStorageFile(m_Storage, path, buffer.data(), size);
+            default:
+                return false;
+        }
+        
     }
 }

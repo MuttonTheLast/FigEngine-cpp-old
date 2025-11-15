@@ -1,4 +1,8 @@
+#include "Fig/Graphics/Desktop/ShaderCross.h"
+#include "Fig/Graphics/GraphicsBackend.h"
+#include "SDL3/SDL_error.h"
 #include "SDL3/SDL_gpu.h"
+#include "SDL3/SDL_init.h"
 #include "SDL3/SDL_stdinc.h"
 #include "pch.h"
 #include "Fig/Application/IApp.h"
@@ -9,6 +13,11 @@
 #include "Fig/OS/Input/Input.h"
 #include "Fig/Utilities/Log/Logger.h"
 #include  "Fig/OS/File/FileSystem.h"
+#include <FigConfig.h>
+
+#if IS_DESKTOP
+    #include <SDL3_shadercross/SDL_shadercross.h>
+#endif
 
 namespace Fig
 {
@@ -121,6 +130,11 @@ namespace Fig
 		m_TargetFrameRate = frameRate;
 	}
 
+    GraphicsBackend IApp::GetBackend()
+    {
+        return m_Backend;
+    }
+
     void IApp::Render()
     {
         SDL_GPUCommandBuffer* cmdbuf = m_GraphicsDevice->AcquireCommandBuffer();
@@ -155,6 +169,7 @@ namespace Fig
 	IApp::IApp(std::string appName, std::string companyName, WindowProps props, bool debug)
 		:m_AppName(appName), m_CompanyName(companyName), m_Debug(debug)
 	{
+        // TODO: Better file debug management
 		Logger::Init(debug, true);
 		Logger::Info("Starting Application: " + m_AppName, "App", true);
 		Logger::Info("Initializing SDL...", "App", true);
@@ -162,14 +177,34 @@ namespace Fig
 		{
 			Logger::Critical(std::string("SDL initialize failed: \n") + SDL_GetError(), "App", true);
 			throw SDL_GetError();
+            return;
 		}
+#if IS_DESKTOP
+        Logger::Info("Initializing ShaderCross", "App");
+        if (!ShaderCross::Init())
+        {
+            Logger::Critical("ShaderCross initialize failed", "App");
+            throw SDL_GetError();
+            return;
+        }
+#endif // IS_DESKTOP
         FileSystem::Init(appName, companyName);
-		m_GraphicsDevice = GraphicsDevice::Create(GraphicsBackend_Vulkan, true);
+        // TODO: Make backend selectable or at least find backend by launch options or automatic
+        m_Backend = GraphicsBackend_Vulkan;
+		m_GraphicsDevice = GraphicsDevice::Create(m_Backend, debug);
 		m_Window = Window::Create(props, 0);
 		m_GraphicsDevice->ClaimWindow(m_Window);
 		Logger::Info("Application fully initialized.", "App", true);
 	}
 	IApp::~IApp()
 	{
+        
+        delete m_GraphicsDevice;
+        delete m_Window;
+#if IS_DESKTOP
+        SDL_ShaderCross_Quit();
+#endif
+        SDL_Quit();
+        // TODO: Shutdown for Logger (OS does that so its not important yet.)
 	}
 }

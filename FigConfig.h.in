@@ -7,3 +7,13 @@
 #define PROJECT_VERSION_PATCH "@PROJECT_VERSION_PATCH@"
 // VERSION END
 
+// DEFAULT_VARS END
+#define TRUE    1
+#define FALSE   0
+#define ON      1
+#define OFF     0
+// DEFAULT_VARS END
+
+
+#cmakedefine IS_DESKTOP @IS_DESKTOP@
+
