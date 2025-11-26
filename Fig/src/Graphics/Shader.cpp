@@ -13,15 +13,6 @@
 namespace Fig
 {
     
-    Shader* Shader::Create(GraphicsDevice* gd,std::vector<Uint8>& data, ShaderType shaderType,
-            Uint32 samplers, Uint32 storageTextures, Uint32 storageBuffers, Uint32 uniformBuffers,
-            const char* entryPoint)
-    {
-        Shader* shader = new Shader(gd, data, shaderType, samplers, storageTextures,
-                storageBuffers, uniformBuffers, entryPoint);
-
-        return shader;
-    }
     const char* Shader::GetDefaultEntry(ShaderType type)
     {
         const char* entry = "VSMain";
@@ -96,5 +87,22 @@ namespace Fig
     SDL_GPUShader* Shader::GetHandle()
     {
         return m_Shader;
+    }
+
+    Shader::~Shader()
+    {
+        if (!m_Released)
+        {
+            Logger::Error("Gpu shader have not released before Shader destruction.", "App");
+        }
+    }
+
+    void Shader::Release(GraphicsDevice* gd)
+    {
+        if (!m_Released)
+        {
+            SDL_ReleaseGPUShader(gd->GetHandle(), m_Shader);
+            m_Released = true;
+        }
     }
 }

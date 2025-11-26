@@ -1,5 +1,6 @@
 #include "Fig/Graphics/Desktop/ShaderCross.h"
 #include "Fig/Graphics/GraphicsBackend.h"
+#include "Fig/Graphics/GraphicsDevice.h"
 #include "SDL3/SDL_error.h"
 #include "SDL3/SDL_gpu.h"
 #include "SDL3/SDL_init.h"
@@ -97,7 +98,7 @@ namespace Fig
 
 			// --- Rendering ---
 			// Render at the target frame rate
-			if (renderElapse >= fpsDT)
+			if (m_TargetFrameRate == 0 || renderElapse >= fpsDT)
 			{
 				// (Rendering code should be placed here)
 				if (updateCount > 1)
@@ -167,7 +168,7 @@ namespace Fig
         SDL_SubmitGPUCommandBuffer(cmdbuf);
     }
 	IApp::IApp(std::string appName, std::string companyName, WindowProps props, bool debug)
-		:m_AppName(appName), m_CompanyName(companyName), m_Debug(debug)
+		:m_AppName(appName), m_CompanyName(companyName), m_Debug(debug), m_Window(NULL)
 	{
         // TODO: Better file debug management
 		Logger::Init(debug, true);
@@ -191,14 +192,13 @@ namespace Fig
         FileSystem::Init(appName, companyName);
         // TODO: Make backend selectable or at least find backend by launch options or automatic
         m_Backend = GraphicsBackend_Vulkan;
-		m_GraphicsDevice = GraphicsDevice::Create(m_Backend, debug);
-		m_Window = Window::Create(props, 0);
+		m_Window = new Window(props, 0);
+        m_GraphicsDevice = new GraphicsDevice(m_Backend, debug);
 		m_GraphicsDevice->ClaimWindow(m_Window);
 		Logger::Info("Application fully initialized.", "App", true);
 	}
 	IApp::~IApp()
 	{
-        
         delete m_GraphicsDevice;
         delete m_Window;
 #if IS_DESKTOP

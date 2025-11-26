@@ -32,8 +32,8 @@ namespace Fig
     class Window
     {
     public:
-        // Static factory method to create a new Window instance
-        static Window* Create(WindowProps props, SDL_WindowFlags flags);
+        // Private constructor: use Create() to instantiate
+        Window(const WindowProps& props, SDL_WindowFlags flags);
 
         bool Claimed = false; // Indicates if the window is claimed/owned by a subsystem
 
@@ -75,11 +75,9 @@ namespace Fig
         operator SDL_Window*();
 
     private:
-        // Private constructor: use Create() to instantiate
-        Window(std::string title, int width, int height, SDL_WindowFlags flags);
 
         SDL_Window* m_Window;    // Pointer to the SDL window
-        bool m_Disposing = false; // Tracks if the window is being disposed
+        bool m_Disposed = false; // Tracks if the window is being disposed
     };
 
 }

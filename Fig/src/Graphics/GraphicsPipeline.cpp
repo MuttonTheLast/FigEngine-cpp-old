@@ -1,16 +1,9 @@
 #include "Fig/Graphics/GraphicsPipeline.h"
 #include "Fig/Graphics/GraphicsDevice.h"
-#include "Fig/Graphics/GraphicsPipelineProps.h"
 #include "SDL3/SDL_gpu.h"
 
 namespace Fig
 {
-    GraphicsPipeline* GraphicsPipeline::Create(GraphicsDevice* device,GraphicsPipelineProps& props)
-    {
-        GraphicsPipeline* pipeline = new GraphicsPipeline(device, props);
-
-        return pipeline;
-    }
     
     SDL_GPUGraphicsPipeline* GraphicsPipeline::GetHandle()
     {
@@ -30,17 +23,10 @@ namespace Fig
         }
     }
 
-    GraphicsPipeline::GraphicsPipeline(GraphicsDevice* device, GraphicsPipelineProps& props)
+    GraphicsPipeline::GraphicsPipeline(const GraphicsDevice* device,
+            SDL_GPUGraphicsPipelineCreateInfo& props)
     {
-        SDL_GPUGraphicsPipelineCreateInfo info
-        {
-            .vertex_shader = props.VertexShader->GetHandle(),
-            .fragment_shader = props.FragmentShader->GetHandle(),
-            .primitive_type = props.PrimitiveType,
-            .rasterizer_state = props.RasterizerState,
-            .target_info = props.TargerInfo
-        };
-        m_Pipeline = SDL_CreateGPUGraphicsPipeline(device->GetHandle(), &info);
+        m_Pipeline = SDL_CreateGPUGraphicsPipeline(device->GetHandle(), &props);
     }
 
 };

@@ -9,11 +9,17 @@ namespace Fig
     // Class that manages a GPU device and its association with a window
     class GraphicsDevice
     {
-    public:
+    /* idk why i have made create when im not using C# :|
+     * public:
         // Static factory method to create a new GraphicsDevice
         static GraphicsDevice* Create(GraphicsBackend backend, bool debug = false);
-
+    */
     public:
+        // Private constructor: use Create() to instantiate
+        // @param shader: The shader format/backend to use
+        // @param debug: Enable debug mode if true
+        GraphicsDevice(GraphicsBackend shader, bool debug);
+
         // Destructor: releases resources
         ~GraphicsDevice();
 
@@ -34,10 +40,6 @@ namespace Fig
 
         SDL_GPUDevice* GetHandle() const;
     private:
-        // Private constructor: use Create() to instantiate
-        // @param shader: The shader format/backend to use
-        // @param debug: Enable debug mode if true
-        GraphicsDevice(SDL_GPUShaderFormat shader, bool debug);
         
         SDL_FColor m_ClearColor = (SDL_FColor){0,0,0,1};
         SDL_GPUDevice* m_Device; // Pointer to the underlying SDL GPU device

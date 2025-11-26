@@ -10,20 +10,22 @@ namespace Fig {
     class Shader
     {
     public:
-        static Shader* Create(GraphicsDevice* gd,std::vector<Uint8>& data,
-                ShaderType shaderType, Uint32 samplers, 
-                Uint32 storageTextures, Uint32 storageBuffers, Uint32 uniformBuffers,
-                const char* entryPoint = "");
-        
-        static const char* GetDefaultEntry(ShaderType type);
-        SDL_GPUShader* GetHandle();
-
-    private:
         Shader(GraphicsDevice* gd, std::vector<Uint8>& data,
                 ShaderType shaderType, Uint32 samplers,
                 Uint32 storageTextures, Uint32 storageBuffers, Uint32 uniformBuffers,
-                const char* entryPoint);
+                const char* entryPoint = "");
         
+        
+
+        static const char* GetDefaultEntry(ShaderType type);
+        SDL_GPUShader* GetHandle();
+        
+        void Release(GraphicsDevice* gd);
+
+        ~Shader();
+    private:
         SDL_GPUShader* m_Shader;
+
+        bool m_Released = false;
     };
 }

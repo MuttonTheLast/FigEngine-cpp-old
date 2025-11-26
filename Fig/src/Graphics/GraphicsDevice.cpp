@@ -1,15 +1,10 @@
+#include "Fig/Graphics/GraphicsBackend.h"
 #include "SDL3/SDL_gpu.h"
 #include "SDL3/SDL_pixels.h"
 #include "Fig/Graphics/GraphicsDevice.h"
 #include "Fig/Utilities/Log/Logger.h"
 namespace Fig
 {
-	// Static factory method to create a new GraphicsDevice instance
-	GraphicsDevice* GraphicsDevice::Create(GraphicsBackend backend, bool debug)
-	{
-		GraphicsDevice* device = new GraphicsDevice(backend, debug);
-		return device;
-	}
 
 	// Destructor: ensures resources are released
 	GraphicsDevice::~GraphicsDevice()
@@ -86,7 +81,7 @@ namespace Fig
         return m_Device;
     }
 	// Constructor: creates the GPU device with the specified shader format and debug flag
-	GraphicsDevice::GraphicsDevice(SDL_GPUShaderFormat shader, bool debug)
+	GraphicsDevice::GraphicsDevice(GraphicsBackend shader, bool debug)
 	{
 		Logger::Info("Creating GraphicsDevice...", "App", true);
 		m_Device = SDL_CreateGPUDevice(shader, debug, NULL);
