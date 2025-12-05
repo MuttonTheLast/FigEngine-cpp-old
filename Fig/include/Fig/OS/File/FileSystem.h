@@ -6,6 +6,7 @@
 #include "Fig/Utilities/HashMap/ankerl/unordered_dense.h"
 #include "SDL3/SDL_asyncio.h"
 #include "SDL3/SDL_stdinc.h"
+#include "SDL3/SDL_storage.h"
 #include <vector>
 
 namespace Fig
@@ -30,6 +31,10 @@ namespace Fig
 
         static SDL_AsyncIO* ReadGameFile(std::string_view path, void* buffer,
                 Uint64 offset, Uint64 length, void* userdata = nullptr);
+
+    public: // NOTE: SDL_Storage
+        static bool ReadFile(const char* path, std::vector<Uint8>& buffer,
+                ReadLocation location = ReadLocation_App);
         
     private:
         static std::string BASE_PATH;
@@ -38,7 +43,10 @@ namespace Fig
         static char s_MaxQueueCount;
         static std::vector<SDL_AsyncIOQueue*> s_AsyncQueues;
         static ankerl::unordered_dense::map<SDL_AsyncIO*, SDL_AsyncIOOutcome> s_Outcomes;
+    
         
+    private: // NOTE: SDL_Storage based
+        static SDL_Storage* m_Storage;
 	};
 }
 

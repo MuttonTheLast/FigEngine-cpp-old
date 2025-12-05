@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "Fig/OS/Input/Input.h"
 #include <iostream>
 #include "Fig/Utilities/Log/Logger.h"

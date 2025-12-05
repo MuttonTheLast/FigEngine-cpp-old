@@ -1,11 +1,17 @@
 #include "Fig/OS/Window.h"
+#include "Fig/Application/IApp.h"
+#include "Fig/Utilities/HashMap/ankerl/unordered_dense.h"
 #include "Fig/Utilities/Log/Logger.h"
+#include "SDL3/SDL_video.h"
+#include <cstddef>
 namespace Fig
 {
+    // ankerl::unordered_dense::map<SDL_Window*, Window*> Window::s_Windows;
 
-	// Static factory method to create a Window with the given properties and flags.
-	Window* Window::Create(WindowProps props, SDL_WindowFlags flags)
+	// Constructor: creates the SDL window with the given title, size, and flags.
+	Window::Window(const WindowProps& props, SDL_WindowFlags flags)
 	{
+        
 		// Apply window property flags based on WindowProps
 		if (props.Fullscreen)
 		{
@@ -27,27 +33,20 @@ namespace Fig
 		{
 			flags |= SDL_WINDOW_HIGH_PIXEL_DENSITY;
 		}
-		// Create the window instance
-		Window* window = new Window(props.Title, props.Width, props.Height, flags);
 
-		// Center the window if requested
-		if (props.Centered)
-		{
-			window->CenterWindow();
-		}
-
-		return window;
-	}
-
-	// Constructor: creates the SDL window with the given title, size, and flags.
-	Window::Window(std::string title, int width, int height, SDL_WindowFlags flags)
-	{
 		Logger::Info("Creating Window...", "App", true);
-		m_Window = SDL_CreateWindow(title.c_str(), width, height, flags);
+		m_Window = SDL_CreateWindow(props.Title.c_str(), props.Width, props.Height, flags);
 		if (m_Window == NULL)
 		{
 			Logger::Error(std::string("Failed to create window: ") + SDL_GetError(), "App", true);
+            return;
 		}
+        // s_Windows.insert({m_Window, this});
+        // Center the window if requested
+        if (props.Centered)
+        {
+            CenterWindow();
+        }
 	}
 
 	// Destructor: ensures the window is properly disposed.
@@ -59,9 +58,10 @@ namespace Fig
 	// Releases the SDL window resource if not already disposed.
 	void Window::Dispose()
 	{
-		if (!m_Disposing)
+		if (!m_Disposed)
 		{
-			m_Disposing = true;
+			m_Disposed = true;
+            // s_Windows.erase(m_Window);
 			SDL_DestroyWindow(m_Window);
 		}
 	}
@@ -129,4 +129,19 @@ namespace Fig
 	{
 		return GetHandle();
 	}
+
+    void Window::SetApp(void* app)
+    {
+        m_App = app;
+    }
+
+    void* Window::GetApp()
+    {
+        return m_App;
+    }
+
+    bool Window::HasApp()
+    {
+        return m_App != NULL;
+    }
 }

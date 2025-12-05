@@ -36,3 +36,4 @@ namespace Fig
 		static bool m_FileLogger;
 	};
 }
+

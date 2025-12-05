@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.25)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,11 +9,33 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>)
 
 link_directories(${CMAKE_BINARY_DIR}/lib/$<CONFIG>)
+
+# INFO: Calculations
+
+# Define a helper variable to mark desktop platforms
+
+option(FIG_FORCE_DESKTOP "Force include desktop things" FALSE)
+set(IS_DESKTOP ${FIG_FORCE_DESKTOP})
+if (NOT ${FIG_FORCE_DESKTOP})
+    if(NOT CMAKE_SYSTEM_NAME AND (WIN32 OR LINUX OR APPLE))
+        set(IS_DESKTOP TRUE)
+        message(WARNING "There is no toolchain. If you want to compile for a desktop its ok.")
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows"
+            OR CMAKE_SYSTEM_NAME STREQUAL "Linux"
+            OR CMAKE_SYSTEM_NAME STREQUAL "Darwin") # macOS
+        set(IS_DESKTOP TRUE)
+    endif()
+endif()
+message(STATUS "Desktop included: ${IS_DESKTOP}")
+
+
+# INFO: End Calculations
+
 project(FigEngine VERSION 0.1.0 LANGUAGES CXX)
 #"a = Alpha, b = Beta, rc[num] = Release Candidate[num], (empty) = Release"
 set(PROJECT_VERSION_SUFFIX "a")
 if(${PROJECT_VERSION_SUFFIX} STREQUAL "")
-    set(PROJECT_VERSION_FULL "${PROJECT_VERSION}${PROJECT_VERSION_SUFFIX}")
+    set(PROJECT_VERSION_FULL "${PROJECT_VERSION}")
 else()
     set(PROJECT_VERSION_FULL "${PROJECT_VERSION}-${PROJECT_VERSION_SUFFIX}")
 endif()

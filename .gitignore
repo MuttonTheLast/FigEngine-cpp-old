@@ -5,7 +5,9 @@
 build/
 /build*/
 .cache/
+logs/
 
+imgui.ini
 # Compiled Object files
 *.slo
 *.lo
@@ -26,6 +28,7 @@ build/
 *.so
 *.dylib
 *.dll
+*.so*.[0-9]
 
 # Fortran module files
 *.mod

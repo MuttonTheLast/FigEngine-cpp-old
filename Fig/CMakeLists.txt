@@ -24,8 +24,15 @@ target_link_directories(Fig
 
 target_link_libraries(Fig 
     PUBLIC SDL3::SDL3
-    PUBLIC SDL3_shadercross-static
     PUBLIC glm::glm
     PUBLIC quill::quill
 )
+
+if (${IS_DESKTOP})
+    target_link_libraries(Fig
+        PUBLIC SDL3_shadercross-static
+    )
+    target_link_libraries(Fig PRIVATE dxcompiler spirv-cross-c-shared)
+
+endif()
 
