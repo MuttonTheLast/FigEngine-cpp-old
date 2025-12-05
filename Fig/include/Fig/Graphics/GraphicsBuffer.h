@@ -11,9 +11,13 @@ namespace Fig
     public:
         GraphicsBuffer(GraphicsDevice* gd, SDL_GPUBufferUsageFlags usage, Uint32 size,
                 SDL_PropertiesID props = 0);    
+        
+        ~GraphicsBuffer();
+        void Release(GraphicsDevice* gd);
 
         SDL_GPUBuffer* GetHandle();
     private:
         SDL_GPUBuffer* m_Handle;
+        bool m_Released = false;
     };
 }

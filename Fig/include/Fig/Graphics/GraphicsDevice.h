@@ -39,6 +39,7 @@ namespace Fig
         const SDL_FColor& GetClearColor();
 
         SDL_GPUDevice* GetHandle() const;
+        Window* GetWindow() const;
     private:
         
         SDL_FColor m_ClearColor = (SDL_FColor){0,0,0,1};

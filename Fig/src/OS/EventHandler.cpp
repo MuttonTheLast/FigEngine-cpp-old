@@ -1,3 +1,4 @@
+#include "Fig/Application/UI/ImGuiBackend.h"
 #include "Fig/Utilities/Log/Logger.h"
 #include "SDL3/SDL_events.h"
 #include "pch.h"
@@ -13,6 +14,8 @@ namespace Fig
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
+            // TODO: Manage it somehow better (Current event is shitty so first event should be fixed)
+            ImGuiBackend::ProcessEvent(&event);
             if (event.type == SDL_EVENT_QUIT)
             {
                 return EventResult_Quit;

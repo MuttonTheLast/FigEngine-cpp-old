@@ -1,19 +1,24 @@
+#include "Fig/Application/UI/ImGuiBackend.h"
 #include "Fig/Graphics/Desktop/ShaderCross.h"
 #include "Fig/Graphics/GraphicsBackend.h"
 #include "Fig/Graphics/GraphicsDevice.h"
 #include "SDL3/SDL_error.h"
 #include "SDL3/SDL_gpu.h"
+#include "SDL3/SDL_hints.h"
 #include "SDL3/SDL_init.h"
 #include "SDL3/SDL_stdinc.h"
 #include "pch.h"
 #include "Fig/Application/IApp.h"
 #include <chrono>
 #include <cstddef>
+#include <cstdlib>
+#include <string>
 #include <type_traits>
 #include "Fig/OS/EventHandler.h"
 #include "Fig/OS/Input/Input.h"
 #include "Fig/Utilities/Log/Logger.h"
 #include  "Fig/OS/File/FileSystem.h"
+#include "quill/core/MacroMetadata.h"
 #include <FigConfig.h>
 
 #if IS_DESKTOP
@@ -28,15 +33,22 @@ namespace Fig
 	}*/
 	void IApp::Run()
 	{
+        if (m_Running)
+        {
+            Logger::Warn("Tried to run application when running", "App");
+            return;
+        }
+        m_Running = true;
 
 		Logger::Info("App init stage.", "App", true);
 		// Initialize the application (user-defined)
 		if (!Init())
         {
             Logger::Error("Failed to initialize user data", "App");
+            m_Running = false;
             return;
         }
-
+        ImGuiBackend::Init(m_GraphicsDevice, true);
 		// Get the current high-resolution time point
 		auto now = std::chrono::high_resolution_clock::now();
 		// Store the previous time in microseconds
@@ -55,7 +67,6 @@ namespace Fig
 
 		unsigned int updateCount = 0;
 
-		m_Running = true;
 		Logger::Info("Starting main loop.", "App", true);
 		while (m_Running)
 		{
@@ -85,6 +96,9 @@ namespace Fig
 				}
                 
 				Update(updateElapse);
+                ImGuiBackend::NewFrame();
+                ImGuiUpdate(updateElapse);
+                ImGuiBackend::EndFrame();
 				updateElapse = 0;
 			}
 
@@ -113,6 +127,7 @@ namespace Fig
 			// Optionally, sleep or yield here to reduce CPU usage
 			// std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
+        ImGuiBackend::Shutdown();
 	}
 	int IApp::GetTargetTickRate() const
 	{
@@ -145,6 +160,8 @@ namespace Fig
             Logger::Error("Could not acquire command buffer.", "App");
             return;
         }
+        ImGuiBackend::PreRender(cmdbuf);
+        PreRender(cmdbuf);
         if (!SDL_AcquireGPUSwapchainTexture(cmdbuf, m_Window->GetHandle(),&m_SwapchainTexture, NULL, NULL)) {
             SDL_Log("AcquireGPUSwapchainTexture failed: %s", SDL_GetError());
             return;
@@ -160,10 +177,11 @@ namespace Fig
             SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(cmdbuf, &colorTargetInfo, 1, NULL);
 
             Render(cmdbuf, renderPass);
-
+            ImGuiBackend::Render(cmdbuf, renderPass);
             SDL_EndGPURenderPass(renderPass);
         }
-
+        
+        ImGuiBackend::PostRender();
 
         SDL_SubmitGPUCommandBuffer(cmdbuf);
     }
@@ -174,12 +192,23 @@ namespace Fig
 		Logger::Init(debug, true);
 		Logger::Info("Starting Application: " + m_AppName, "App", true);
 		Logger::Info("Initializing SDL...", "App", true);
+        
+        // Force X11 driver via environment variable if needed
+        setenv("SDL_VIDEODRIVER", "x11", 1);
+        SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "x11");
 		if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
 		{
 			Logger::Critical(std::string("SDL initialize failed: \n") + SDL_GetError(), "App", true);
 			throw SDL_GetError();
             return;
 		}
+        
+        const char *driver = SDL_GetCurrentVideoDriver();
+        if (driver) {
+            Logger::Info("SDL is using video driver: " + std::string(driver), "App");
+        } else {
+            Logger::Critical("No Video driver active!", "App");
+        }
 #if IS_DESKTOP
         Logger::Info("Initializing ShaderCross", "App");
         if (!ShaderCross::Init())

@@ -14,8 +14,21 @@ namespace Fig
         m_Handle = SDL_CreateGPUBuffer(gd->GetHandle(), &info);
     }
 
+    // TODO: Destruct i guess :|
+    GraphicsBuffer::~GraphicsBuffer()
+    {
+
+    }
+
     SDL_GPUBuffer* GraphicsBuffer::GetHandle()
     {
         return m_Handle;
+    }
+
+    void GraphicsBuffer::Release(GraphicsDevice* gd)
+    {
+        if (m_Released) return;
+        m_Released = false;
+        SDL_ReleaseGPUBuffer(gd->GetHandle(), m_Handle);
     }
 }

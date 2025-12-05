@@ -97,4 +97,9 @@ namespace Fig {
         m_State |= TransferBufferState::Released;
     }
 
+    SDL_GPUTransferBuffer* TransferBuffer::GetHandle()
+    {
+        return m_Handle;
+    }
+
 }

@@ -1,3 +1,5 @@
+
+#include "Fig/Application/UI/ImGuiBackend.h"
 #include "Fig/Graphics/Desktop/ShaderCross.h"
 #include "Fig/Graphics/GraphicsBuffer.h"
 #include "Fig/Graphics/GraphicsDevice.h"
@@ -11,10 +13,13 @@
 #include <SDL3/SDL.h>
 #include "Fig/Application/IApp.h"
 #include "Fig/Utilities/GLMath.h"
+#include "Fig/Utilities/ImGui/imgui.h"
 #include "Fig/Utilities/Log/Logger.h"
 #include "SDL3/SDL_gpu.h"
 #include "SDL3/SDL_stdinc.h"
 #include "quill/core/MacroMetadata.h"
+#include <iostream>
+#include <iterator>
 #include <string>
 #include <unistd.h>
 #include <Fig/OS/EventHandler.h>
@@ -30,11 +35,10 @@ public:
 	Game(std::string appName, std::string companyName, WindowProps prop, bool debug)
 		:IApp(appName, companyName, prop, debug)
 	{
-        
+           
 	}
 private:
     GraphicsPipeline* pipeline;
-
 
     GraphicsBuffer* VBO;
 	// Inherited via IApp
@@ -49,6 +53,7 @@ private:
             Logger::Info("ReadFile", "App", false);
             Logger::Info(std::string((char*)data.data()), "App");
         }
+
         std::vector<Uint8> shaderdata;
         ShaderCross::SPIRVFromHLSL(data, shaderdata, Fig::ShaderType_Vertex);
         Shader shader = Shader(m_GraphicsDevice, shaderdata, ShaderType_Vertex, 0, 0, 0, 0);
@@ -145,26 +150,32 @@ private:
 
 	void FixedUpdate(double delta) override
 	{
-        
 	}
 	double updateCount = 0;
 	void Update(double delta) override
 	{
 		updateCount += delta;
-        
 	}
 
+    void ImGuiUpdate(double delta) override
+    {
+        ImGui::ShowDemoWindow();
+        
+    }
 
+    void PreRender(SDL_GPUCommandBuffer* cmdbuff) override
+    {
+    }
 	// Inherited via IApp
 	void Render(SDL_GPUCommandBuffer* cmdbuff, SDL_GPURenderPass* renderpass) override
 	{
         
-        pipeline->Bind(renderpass);
         SDL_GPUBufferBinding bb
         {
             .buffer = VBO->GetHandle(),
             .offset = 0
         };
+        pipeline->Bind(renderpass);
         SDL_BindGPUVertexBuffers(renderpass, 0, &bb, 1);
         SDL_DrawGPUPrimitives(renderpass, 3, 1, 0, 0);
 	}

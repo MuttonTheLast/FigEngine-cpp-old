@@ -1,3 +1,4 @@
+#pragma once
 #include "Fig/Graphics/GraphicsDevice.h"
 #include "Fig/Graphics/ShaderType.h"
 #include "SDL3/SDL_gpu.h"

@@ -5,7 +5,9 @@
 build/
 /build*/
 .cache/
+logs/
 
+imgui.ini
 # Compiled Object files
 *.slo
 *.lo

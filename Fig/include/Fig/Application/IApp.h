@@ -30,7 +30,10 @@ namespace Fig
         // Called once per frame (variable timestep, e.g., game logic, input).
         // @param delta: Time in seconds since last update.
         virtual void Update(double delta) = 0;
+        
+        virtual void ImGuiUpdate(double delta){};
 
+        virtual void PreRender(SDL_GPUCommandBuffer* cmdbuf) = 0;
 		virtual void Render(SDL_GPUCommandBuffer* cmdbuf, SDL_GPURenderPass* renderpass) = 0;
 
         int GetTargetTickRate() const;

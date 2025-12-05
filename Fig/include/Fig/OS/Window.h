@@ -1,6 +1,8 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include "Fig/Utilities/GLMath.h"
+#include "Fig/Utilities/HashMap/ankerl/unordered_dense.h"
+#include "SDL3/SDL_video.h"
 #include <string>
 
 namespace Fig
@@ -34,9 +36,10 @@ namespace Fig
     public:
         // Private constructor: use Create() to instantiate
         Window(const WindowProps& props, SDL_WindowFlags flags);
-
         bool Claimed = false; // Indicates if the window is claimed/owned by a subsystem
 
+    public:
+        // static Window* GetWindow(SDL_Window* window);
     public:
         // Destructor: cleans up resources
         ~Window();
@@ -73,9 +76,13 @@ namespace Fig
 
         // Implicit conversion operator to SDL_Window*
         operator SDL_Window*();
-
+        
+        void SetApp(void* app);
+        void* GetApp();
+        bool HasApp();
     private:
-
+        // static ankerl::unordered_dense::map<SDL_Window*, Window*> s_Windows;
+        void* m_App;
         SDL_Window* m_Window;    // Pointer to the SDL window
         bool m_Disposed = false; // Tracks if the window is being disposed
     };

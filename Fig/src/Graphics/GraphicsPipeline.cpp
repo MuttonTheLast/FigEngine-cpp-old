@@ -1,6 +1,8 @@
 #include "Fig/Graphics/GraphicsPipeline.h"
 #include "Fig/Graphics/GraphicsDevice.h"
+#include "Fig/Utilities/Log/Logger.h"
 #include "SDL3/SDL_gpu.h"
+#include <cstddef>
 
 namespace Fig
 {
@@ -28,5 +30,12 @@ namespace Fig
     {
         m_Pipeline = SDL_CreateGPUGraphicsPipeline(device->GetHandle(), &props);
     }
-
+    
+    GraphicsPipeline::~GraphicsPipeline()
+    {
+        if (m_Pipeline != NULL)
+        {
+            Logger::Warn("Did not release pipeline before destruction!", "App");
+        }
+    }
 };

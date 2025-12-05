@@ -1,7 +1,12 @@
 #include "Fig/OS/Window.h"
+#include "Fig/Application/IApp.h"
+#include "Fig/Utilities/HashMap/ankerl/unordered_dense.h"
 #include "Fig/Utilities/Log/Logger.h"
+#include "SDL3/SDL_video.h"
+#include <cstddef>
 namespace Fig
 {
+    // ankerl::unordered_dense::map<SDL_Window*, Window*> Window::s_Windows;
 
 	// Constructor: creates the SDL window with the given title, size, and flags.
 	Window::Window(const WindowProps& props, SDL_WindowFlags flags)
@@ -36,6 +41,7 @@ namespace Fig
 			Logger::Error(std::string("Failed to create window: ") + SDL_GetError(), "App", true);
             return;
 		}
+        // s_Windows.insert({m_Window, this});
         // Center the window if requested
         if (props.Centered)
         {
@@ -55,6 +61,7 @@ namespace Fig
 		if (!m_Disposed)
 		{
 			m_Disposed = true;
+            // s_Windows.erase(m_Window);
 			SDL_DestroyWindow(m_Window);
 		}
 	}
@@ -122,4 +129,19 @@ namespace Fig
 	{
 		return GetHandle();
 	}
+
+    void Window::SetApp(void* app)
+    {
+        m_App = app;
+    }
+
+    void* Window::GetApp()
+    {
+        return m_App;
+    }
+
+    bool Window::HasApp()
+    {
+        return m_App != NULL;
+    }
 }

@@ -27,6 +27,8 @@ namespace Fig
                 Uint32 size,Uint32 transferOffset, bool cycle = false);
 
         void Release(GraphicsDevice* gd);
+
+        SDL_GPUTransferBuffer* GetHandle();
     private:
         SDL_GPUTransferBuffer* m_Handle;
         

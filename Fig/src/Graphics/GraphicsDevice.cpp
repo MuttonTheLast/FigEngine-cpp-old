@@ -1,4 +1,5 @@
 #include "Fig/Graphics/GraphicsBackend.h"
+#include "Fig/OS/Window.h"
 #include "SDL3/SDL_gpu.h"
 #include "SDL3/SDL_pixels.h"
 #include "Fig/Graphics/GraphicsDevice.h"
@@ -79,6 +80,10 @@ namespace Fig
     SDL_GPUDevice* GraphicsDevice::GetHandle() const
     {
         return m_Device;
+    }
+    Window* GraphicsDevice::GetWindow() const
+    {
+        return m_Window;
     }
 	// Constructor: creates the GPU device with the specified shader format and debug flag
 	GraphicsDevice::GraphicsDevice(GraphicsBackend shader, bool debug)
