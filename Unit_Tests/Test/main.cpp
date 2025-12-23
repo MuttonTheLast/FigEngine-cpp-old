@@ -21,7 +21,6 @@
 #include <iostream>
 #include <iterator>
 #include <string>
-#include <unistd.h>
 #include <Fig/OS/EventHandler.h>
 #include <vector>
 #include <FigConfig.h>
