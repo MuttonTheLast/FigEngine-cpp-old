@@ -20,6 +20,7 @@
 #include  "Fig/OS/File/FileSystem.h"
 #include "quill/core/MacroMetadata.h"
 #include <FigConfig.h>
+#include "FigConfig.h"
 
 #if IS_DESKTOP
     #include <SDL3_shadercross/SDL_shadercross.h>
@@ -192,10 +193,13 @@ namespace Fig
 		Logger::Init(debug, true);
 		Logger::Info("Starting Application: " + m_AppName, "App", true);
 		Logger::Info("Initializing SDL...", "App", true);
-        
+
+#if LINUX
         // Force X11 driver via environment variable if needed
-        // setenv("SDL_VIDEODRIVER", "x11", 1);
-        // SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "x11");
+        setenv("SDL_VIDEODRIVER", "x11", 1);
+        SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "x11");
+
+#endif
 		if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
 		{
 			Logger::Critical(std::string("SDL initialize failed: \n") + SDL_GetError(), "App", true);
@@ -219,8 +223,14 @@ namespace Fig
         }
 #endif // IS_DESKTOP
         FileSystem::Init(appName, companyName);
+
         // TODO: Make backend selectable or at least find backend by launch options or automatic
+#if LINUX
+        m_Backend = GraphicsBackend_Vulkan;
+#elif WINDOWS
         m_Backend = GraphicsBackend_D3D12;
+#endif
+
 		m_Window = new Window(props, 0);
         m_GraphicsDevice = new GraphicsDevice(m_Backend, debug);
 		m_GraphicsDevice->ClaimWindow(m_Window);

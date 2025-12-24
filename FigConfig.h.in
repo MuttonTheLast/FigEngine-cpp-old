@@ -16,4 +16,11 @@
 
 
 #cmakedefine IS_DESKTOP @IS_DESKTOP@
+#cmakedefine WINDOWS @WIN32@
+#cmakedefine MACOS @APPLE@
+#cmakedefine LINUX @LINUX@
+#cmakedefine IOS @IOS@
+#cmakedefine ANDROID @ANDROID@
+#cmakedefine BSD @BSD@
+
 
