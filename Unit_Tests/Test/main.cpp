@@ -54,10 +54,10 @@ private:
         }
 
         std::vector<Uint8> shaderdata;
-        ShaderCross::SPIRVFromHLSL(data, shaderdata, Fig::ShaderType_Vertex);
+        ShaderCross::FromSource(data, shaderdata, Fig::ShaderType_Vertex, GetBackend());
         Shader shader = Shader(m_GraphicsDevice, shaderdata, ShaderType_Vertex, 0, 0, 0, 0);
 
-        ShaderCross::SPIRVFromHLSL(data, shaderdata, Fig::ShaderType_Fragment);
+        ShaderCross::FromSource(data, shaderdata, Fig::ShaderType_Fragment, GetBackend());
         Shader shader2 = Shader(m_GraphicsDevice, shaderdata, ShaderType_Fragment, 0, 0, 0, 0);       
         data.clear();
         
