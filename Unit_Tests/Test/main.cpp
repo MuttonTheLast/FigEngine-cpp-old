@@ -40,6 +40,7 @@ private:
     GraphicsPipeline* pipeline;
 
     GraphicsBuffer* VBO;
+    GraphicsBuffer* IBO;
 	// Inherited via IApp
 	bool Init() override
 	{
@@ -90,6 +91,7 @@ private:
                 },
                 .num_vertex_attributes = 2,
             },
+            
             .primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
             .target_info = {
                 .color_target_descriptions = (SDL_GPUColorTargetDescription[]){{
@@ -111,18 +113,30 @@ private:
         Logger::Info(std::to_string(sizeof(PositionColorVertex)), "App");
         
         VBO = new GraphicsBuffer(m_GraphicsDevice, SDL_GPU_BUFFERUSAGE_VERTEX, 
-                sizeof(PositionColorVertex) * 3);
+                sizeof(PositionColorVertex) * 4);
+
+        IBO = new GraphicsBuffer(m_GraphicsDevice, SDL_GPU_BUFFERUSAGE_INDEX, 
+                sizeof(Uint16) * 6);
         
         TransferBuffer tb(m_GraphicsDevice, SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-                sizeof(PositionColorVertex) * 3);
+                sizeof(PositionColorVertex) * 4 + sizeof(Uint16) * 6);
 
         PositionColorVertex* transferData = (PositionColorVertex*) tb.Map(m_GraphicsDevice);
     
 
         
         transferData[0] = (PositionColorVertex) { Vector3(-0.5,-0.5,0), Vector3(1,0,0) };
-        transferData[1] = (PositionColorVertex) {  Vector3(0, 0.5, 0), Vector3(0,1,0) };
-        transferData[2] = (PositionColorVertex) {  Vector3(0.5,-0.5,0), Vector3(0,0,1) };
+        transferData[1] = (PositionColorVertex) {  Vector3(-0.5, 0.5, 0), Vector3(0,1,0) };
+        transferData[2] = (PositionColorVertex) {  Vector3(0.5, 0.5,0), Vector3(0,0,1) };
+        transferData[3] = (PositionColorVertex) {  Vector3(0.5, -0.5,0), Vector3(0,1,1) };
+
+        Uint16* indexData = (Uint16*) &transferData[4];
+        indexData[0] = 0;
+        indexData[1] = 1;
+        indexData[2] = 2;
+        indexData[3] = 0;
+        indexData[4] = 2;
+        indexData[5] = 3;
     
 	    tb.Unmap(m_GraphicsDevice);
 
@@ -131,7 +145,8 @@ private:
         SDL_GPUCommandBuffer* uploadCmdBuf = SDL_AcquireGPUCommandBuffer(m_GraphicsDevice->GetHandle());
         SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmdBuf);
 
-        tb.Upload(copyPass, 0, VBO, 0, sizeof(PositionColorVertex) * 3);
+        tb.Upload(copyPass, 0, VBO, 0, sizeof(PositionColorVertex) * 4);
+        tb.Upload(copyPass, sizeof(PositionColorVertex) * 4, IBO, 0, sizeof(Uint16) * 6);
             
 
         SDL_EndGPUCopyPass(copyPass);
@@ -169,14 +184,21 @@ private:
 	void Render(SDL_GPUCommandBuffer* cmdbuff, SDL_GPURenderPass* renderpass) override
 	{
         
-        SDL_GPUBufferBinding bb
+        SDL_GPUBufferBinding vbb
         {
             .buffer = VBO->GetHandle(),
             .offset = 0
         };
+
+        SDL_GPUBufferBinding ibb
+        {
+            .buffer = IBO->GetHandle(),
+            .offset = 0
+        };
         pipeline->Bind(renderpass);
-        SDL_BindGPUVertexBuffers(renderpass, 0, &bb, 1);
-        SDL_DrawGPUPrimitives(renderpass, 3, 1, 0, 0);
+        SDL_BindGPUVertexBuffers(renderpass, 0, &vbb, 1);
+        SDL_BindGPUIndexBuffer(renderpass ,&ibb, SDL_GPU_INDEXELEMENTSIZE_16BIT);
+        SDL_DrawGPUIndexedPrimitives(renderpass, 6, 1, 0, 0, 0);
 	}
 
 public:
