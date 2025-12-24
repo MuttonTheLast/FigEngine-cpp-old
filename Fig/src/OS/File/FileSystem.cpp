@@ -108,7 +108,8 @@ namespace Fig
                 {
                     return false;
                 }
-                buffer.resize(size);
+                buffer.resize(size + 1); // add a null byte so if its string we have no problem
+
                 return SDL_ReadStorageFile(m_Storage, path, buffer.data(), size);
             default:
                 return false;
