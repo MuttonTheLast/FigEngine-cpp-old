@@ -9,6 +9,7 @@ namespace Fig
 
     GraphicsBuffer::GraphicsBuffer(GraphicsDevice* gd, SDL_GPUBufferUsageFlags usage,
             Uint32 size, SDL_PropertiesID props)
+        :GraphicsResource(gd)
     {
         SDL_GPUBufferCreateInfo info(usage, size,props);
         m_Handle = SDL_CreateGPUBuffer(gd->GetHandle(), &info);
@@ -17,7 +18,21 @@ namespace Fig
     // TODO: Destruct i guess :|
     GraphicsBuffer::~GraphicsBuffer()
     {
+        Dispose();
+    }
 
+    void GraphicsBuffer::Dispose()
+    {
+        if (m_Disposed)
+            return;
+
+        if (m_Handle != NULL)
+        {
+            SDL_ReleaseGPUBuffer(m_GraphicsDevice->GetHandle(), m_Handle);
+            m_Handle = NULL;
+        }
+
+        m_Disposed = false;
     }
 
     SDL_GPUBuffer* GraphicsBuffer::GetHandle()
@@ -25,10 +40,4 @@ namespace Fig
         return m_Handle;
     }
 
-    void GraphicsBuffer::Release(GraphicsDevice* gd)
-    {
-        if (m_Released) return;
-        m_Released = false;
-        SDL_ReleaseGPUBuffer(gd->GetHandle(), m_Handle);
-    }
 }

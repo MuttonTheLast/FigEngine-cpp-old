@@ -12,4 +12,10 @@ namespace Fig
         Vector3 Color;
     };
 
+    struct PositionUVVertex
+    {
+        Vector3 Position;
+        Vector2 UV;
+    };
+
 }

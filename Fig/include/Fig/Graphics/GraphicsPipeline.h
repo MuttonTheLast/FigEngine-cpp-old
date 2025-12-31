@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Fig/Graphics/GraphicsDevice.h"
+#include "Fig/Graphics/GraphicsResource.h"
 #include "SDL3/SDL_gpu.h"
 namespace Fig
 {
-    class GraphicsPipeline
+    class GraphicsPipeline : public GraphicsResource
     {
     public:
 
@@ -13,7 +14,8 @@ namespace Fig
         
         void Bind(SDL_GPURenderPass* renderpass);
 
-        void Release(GraphicsDevice* device);
+        void Dispose() override;
+
         SDL_GPUGraphicsPipeline* GetHandle();
     private:
 

@@ -5,9 +5,9 @@ namespace Fig
 {
     
     
-    inline SDL_GPUSampler* Sampler::CreatePointClamp(GraphicsDevice *gd)
+    SDL_GPUSampler* Sampler::CreatePointClamp(GraphicsDevice *gd)
     {
-        constexpr SDL_GPUSamplerCreateInfo info
+        SDL_GPUSamplerCreateInfo info
         {
             // nvim did that and im lazy 
             .min_filter = SDL_GPU_FILTER_NEAREST,
@@ -20,9 +20,9 @@ namespace Fig
         return SDL_CreateGPUSampler(gd->GetHandle(), &info);
     }
 
-    inline SDL_GPUSampler* Sampler::CreatePointWrap(GraphicsDevice *gd)
+    SDL_GPUSampler* Sampler::CreatePointWrap(GraphicsDevice *gd)
     {
-        constexpr SDL_GPUSamplerCreateInfo info
+        SDL_GPUSamplerCreateInfo info
         {
             .min_filter = SDL_GPU_FILTER_NEAREST,
                 .mag_filter = SDL_GPU_FILTER_NEAREST,

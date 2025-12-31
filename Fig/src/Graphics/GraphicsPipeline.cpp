@@ -17,25 +17,28 @@ namespace Fig
         SDL_BindGPUGraphicsPipeline(renderpass, m_Pipeline);
     }
 
-    void GraphicsPipeline::Release(GraphicsDevice* device)
+    void GraphicsPipeline::Dispose()
     {
+        if (m_Disposed)
+            return;
+
         if (m_Pipeline != NULL)
         {
-            SDL_ReleaseGPUGraphicsPipeline(device->GetHandle(), m_Pipeline);
+            SDL_ReleaseGPUGraphicsPipeline(m_GraphicsDevice->GetHandle(), m_Pipeline);
+            m_Pipeline = NULL;
         }
+        m_Disposed = true;
     }
 
     GraphicsPipeline::GraphicsPipeline(const GraphicsDevice* device,
             SDL_GPUGraphicsPipelineCreateInfo& props)
+        :GraphicsResource((GraphicsDevice*)device)
     {
         m_Pipeline = SDL_CreateGPUGraphicsPipeline(device->GetHandle(), &props);
     }
     
     GraphicsPipeline::~GraphicsPipeline()
     {
-        if (m_Pipeline != NULL)
-        {
-            Logger::Warn("Did not release pipeline before destruction!", "App");
-        }
+        Dispose();
     }
 };

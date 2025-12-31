@@ -1,4 +1,5 @@
 #include "Fig/Graphics/GraphicsDevice.h"
+#include "Fig/Graphics/GraphicsResource.h"
 #include "Fig/Graphics/ShaderType.h"
 #include "Fig/Utilities/Log/Logger.h"
 #include "SDL3/SDL_error.h"
@@ -36,8 +37,8 @@ namespace Fig
     Shader::Shader(GraphicsDevice* gd, std::vector<Uint8>& data, ShaderType shaderType,
             Uint32 samplers, Uint32 storageTextures, Uint32 storageBuffers, Uint32 uniformBuffers,
             const char* entryPoint)
+        :GraphicsResource(gd)
     {
-
         const char* entry = entryPoint;
         if (entryPoint == NULL || strcmp(entry, "") == 0)
         {
@@ -89,20 +90,21 @@ namespace Fig
         return m_Shader;
     }
 
+    void Shader::Dispose()
+    {
+        if (m_Disposed)
+            return;
+        
+        if (m_Shader != NULL)
+        {
+            SDL_ReleaseGPUShader(m_GraphicsDevice->GetHandle(), m_Shader);
+            m_Shader = NULL;
+        }
+        m_Disposed = true;
+    }
     Shader::~Shader()
     {
-        if (!m_Released)
-        {
-            Logger::Error("Gpu shader have not released before Shader destruction.", "App");
-        }
+        Dispose();
     }
 
-    void Shader::Release(GraphicsDevice* gd)
-    {
-        if (!m_Released)
-        {
-            SDL_ReleaseGPUShader(gd->GetHandle(), m_Shader);
-            m_Released = true;
-        }
-    }
 }
