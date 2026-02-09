@@ -169,7 +169,7 @@ private:
         
         
         // Upload the transfer data to the GPU resources
-        SDL_GPUCommandBuffer* uploadCmdBuf = SDL_AcquireGPUCommandBuffer(m_GraphicsDevice->GetHandle());
+        SDL_GPUCommandBuffer* uploadCmdBuf = m_GraphicsDevice->AcquireCommandBuffer();
         SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmdBuf);
         
 
@@ -178,7 +178,7 @@ private:
         ttb.Upload(copyPass, 0, texture, false);
 
         SDL_EndGPUCopyPass(copyPass);
-        SDL_SubmitGPUCommandBuffer(uploadCmdBuf);
+        m_GraphicsDevice->SubmitCommandBuffer();
         tb.Dispose();
         ttb.Dispose();
 

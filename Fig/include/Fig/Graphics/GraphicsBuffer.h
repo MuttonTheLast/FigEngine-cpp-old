@@ -14,7 +14,7 @@ namespace Fig
                 SDL_PropertiesID props = 0);    
         
         ~GraphicsBuffer();
-        
+ 
         void Dispose() override;
 
         SDL_GPUBuffer* GetHandle();

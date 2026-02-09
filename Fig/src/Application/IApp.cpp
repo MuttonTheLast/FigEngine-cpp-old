@@ -196,6 +196,7 @@ namespace Fig
 
 #if LINUX
         // Force X11 driver via environment variable if needed
+        // TODO: make it launch option
         setenv("SDL_VIDEODRIVER", "x11", 1);
         SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "x11");
 

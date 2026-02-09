@@ -14,6 +14,8 @@ namespace Fig
     {
 
     public:
+        
+    public:
 
         
         // Texture(GraphicsDevice* gd, std::string_view path, int depth = 1, int levels = 1, SDL_GPUTextureUsageFlags usage = SDL_GPU_TEXTUREUSAGE_SAMPLER);

@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include "Fig/Utilities/GLMath.h"
+#include "Fig/Utilities/GLMath.h"
 #include "Fig/Utilities/HashMap/ankerl/unordered_dense.h"
 #include "SDL3/SDL_video.h"
 #include <string>
@@ -82,7 +83,6 @@ namespace Fig
         bool HasApp();
     private:
         // static ankerl::unordered_dense::map<SDL_Window*, Window*> s_Windows;
-        void* m_App;
         SDL_Window* m_Window;    // Pointer to the SDL window
         bool m_Disposed = false; // Tracks if the window is being disposed
     };

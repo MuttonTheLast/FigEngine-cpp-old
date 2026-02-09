@@ -4,6 +4,7 @@
 #include "SDL3/SDL_pixels.h"
 #include "Fig/Graphics/GraphicsDevice.h"
 #include "Fig/Utilities/Log/Logger.h"
+#include <cstddef>
 namespace Fig
 {
 
@@ -56,6 +57,7 @@ namespace Fig
 	{
 		if (m_Window == NULL)
 		{
+            Logger::Warn("There no window binded to release.", "App");
 			return;
 		}
 		SDL_ReleaseWindowFromGPUDevice(m_Device, m_Window->GetHandle());
@@ -85,6 +87,11 @@ namespace Fig
     {
         return m_Window;
     }
+    SDL_GPUCommandBuffer* GraphicsDevice::GetCommandBuffer() const
+    {
+        return m_CommandBuffer;
+    }
+
 	// Constructor: creates the GPU device with the specified shader format and debug flag
 	GraphicsDevice::GraphicsDevice(GraphicsBackend shader, bool debug)
 	{

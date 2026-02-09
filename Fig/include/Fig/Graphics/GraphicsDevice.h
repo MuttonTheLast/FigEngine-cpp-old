@@ -34,11 +34,13 @@ namespace Fig
         void ReleaseWindow();
         
         SDL_GPUCommandBuffer* AcquireCommandBuffer();
+        void SubmitCommandBuffer();
         
         void SetClearColor(const SDL_FColor& color);
         const SDL_FColor& GetClearColor();
 
         SDL_GPUDevice* GetHandle() const;
+
         Window* GetWindow() const;
     private:
         
